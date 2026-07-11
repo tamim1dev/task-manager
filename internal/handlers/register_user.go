@@ -17,15 +17,15 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var newUser models.CreateUserRequest
 	var returnUser ReturnNewUser
 
-	err := json.NewDecoder(r.Body).Decode(&newUser)
-	if err != nil {
+	jsonerr := json.NewDecoder(r.Body).Decode(&newUser)
+	if jsonerr != nil {
 		utils.ReturnError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
 
-	password_hash, err := utils.HashPassword(newUser.Password)
-	if err != nil {
+	password_hash, hasherr := utils.HashPassword(newUser.Password)
+	if hasherr != nil {
 		utils.ReturnError(w, http.StatusInternalServerError, "Error hashing password")
 		return
 	}

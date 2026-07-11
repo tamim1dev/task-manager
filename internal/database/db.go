@@ -6,4 +6,6 @@ type Database struct {
 	Pool *pgxpool.Pool
 }
 
-var DB *Database
+var DB *Database = &Database{
+	Pool: nil,
+}

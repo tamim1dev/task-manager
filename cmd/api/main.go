@@ -20,8 +20,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	database.DB.Pool, err = pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
-	if err != nil {
+	var dberr error
+	database.DB.Pool, dberr = pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	if dberr != nil {
 		fmt.Fprintf(os.Stderr, "Connection pool error: %v\n", err)
 		os.Exit(1)
 	}
