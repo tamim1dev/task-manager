@@ -36,6 +36,8 @@ func main() {
 
 	// register new user
 	router.Post("/register", handlers.RegisterUser)
+	// login user
+	router.Post("/login", handlers.LoginUser)
 
 	http.ListenAndServe(":5000", router)
 }
