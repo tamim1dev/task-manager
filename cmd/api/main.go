@@ -9,6 +9,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"github.com/tamim1dev/task-manager/internal/database"
+	"github.com/tamim1dev/task-manager/internal/handlers"
 )
 
 func main() {
@@ -18,19 +20,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	database.DB.Pool, err = pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Println("awdsfvasd")
 		fmt.Fprintf(os.Stderr, "Connection pool error: %v\n", err)
 		os.Exit(1)
 	}
-	defer dbpool.Close()
+	defer database.DB.Pool.Close()
 
 	router := chi.NewRouter()
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello"))
 	})
+
+	// register new user
+	router.Post("/register", handlers.RegisterUser)
 
 	http.ListenAndServe(":5000", router)
 }

@@ -13,3 +13,9 @@ type User struct {
 	Password_Hash string    `json:"-"`
 	Created_At    time.Time `json:"created_at"`
 }
+
+type CreateUserRequest struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
