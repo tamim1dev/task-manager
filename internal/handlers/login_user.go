@@ -49,6 +49,10 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	if os.Getenv("JWT_SECRET") == "" {
+		utils.ReturnError(w, http.StatusInternalServerError, "Internal server error env")
+		return
+	}
 	tokenStr, tokenErr := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if tokenErr != nil {
 		utils.ReturnError(w, http.StatusInternalServerError, "Internal server error")
