@@ -33,7 +33,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			if !ok {
 				return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
 			}
-			return os.Getenv("JWT_SECRET"), nil
+			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
 		if tokenErr != nil || !token.Valid {
 			utils.ReturnError(w, http.StatusUnauthorized, "Invalid or expired token")

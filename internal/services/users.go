@@ -10,7 +10,13 @@ import (
 func GetUserByEmail(email string, r *http.Request) (models.User, error) {
 	var targetUser models.User
 	query := `SELECT * FROM users WHERE email = ($1)`
-	dbErr := database.DB.Pool.QueryRow(r.Context(), query, email).Scan(&targetUser)
+	dbErr := database.DB.Pool.QueryRow(r.Context(), query, email).Scan(
+		&targetUser.Id,
+		&targetUser.Name,
+		&targetUser.Email,
+		&targetUser.Password_Hash,
+		&targetUser.Created_At,
+	)
 	if dbErr != nil {
 		return models.User{}, dbErr
 	}

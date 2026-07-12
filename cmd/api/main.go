@@ -11,6 +11,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/tamim1dev/task-manager/internal/database"
 	"github.com/tamim1dev/task-manager/internal/handlers"
+	"github.com/tamim1dev/task-manager/internal/middleware"
 )
 
 func main() {
@@ -38,6 +39,12 @@ func main() {
 	router.Post("/register", handlers.RegisterUser)
 	// login user
 	router.Post("/login", handlers.LoginUser)
+	// jwt middleware check
+	router.Get("/me", middleware.AuthMiddleware(handlers.GetMe))
 
-	http.ListenAndServe(":5000", router)
+	serverStartError := http.ListenAndServe(":"+os.Getenv("PORT"), router)
+	if serverStartError != nil {
+		fmt.Println("Failed to start server")
+		os.Exit(1)
+	}
 }
