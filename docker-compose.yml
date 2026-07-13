@@ -13,5 +13,18 @@ services:
       - postgres_data:/var/lib/postgresql
     command: [ "postgres", "-c", "ssl=off" ]
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    env_file:
+      - .env
+
 volumes:
   postgres_data:

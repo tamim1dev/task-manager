@@ -40,6 +40,8 @@ func main() {
 	})
 	// router mounts
 	router.Mount("/auth", routers.AuthRouter())
+	router.Mount("/users", routers.UsersRouter())
+	router.Mount("/tasks", routers.TasksRouter())
 
 	// start server and gracefull shutdown
 	srv := &http.Server{
