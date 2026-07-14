@@ -40,6 +40,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		r.Header.Set("X-User-Id", claims.Id.String())
 		r.Header.Set("X-User-Email", claims.Email)
 		next.ServeHTTP(w, r)
 	}

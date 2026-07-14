@@ -1,9 +1,13 @@
 package models
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+)
 
 type JwtClaims struct {
-	Email string `json:"email"`
+	Id    uuid.UUID `json:"id"`
+	Email string    `json:"email"`
 	jwt.RegisteredClaims
 }
 

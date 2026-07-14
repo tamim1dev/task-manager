@@ -42,6 +42,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	// jwt
 	expirationTime := time.Now().Add(15 * time.Minute)
 	claims := &models.JwtClaims{
+		Id:    userFromDb.Id,
 		Email: loginRequest.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
