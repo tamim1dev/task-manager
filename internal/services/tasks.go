@@ -57,3 +57,21 @@ func GetTasksByUserID(userId string, r *http.Request) ([]models.Task, error) {
 
 	return tasks, nil
 }
+
+func GetTaskById(task_id, user_id string, r *http.Request) (models.Task, error) {
+	var task models.Task
+	query := `SELECT * FROM tasks WHERE id = $1 AND user_id = $2`
+	dbErr := database.DB.Pool.QueryRow(r.Context(), query, task_id, user_id).Scan(
+		&task.Id,
+		&task.Title,
+		&task.Description,
+		&task.Completed,
+		&task.Due_Date,
+		&task.User_Id,
+		&task.Created_At,
+	)
+	if dbErr != nil {
+		return models.Task{}, dbErr
+	}
+	return task, nil
+}
