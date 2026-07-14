@@ -10,6 +10,7 @@ func TasksRouter() *chi.Mux {
 	tasksRouter := chi.NewRouter()
 
 	tasksRouter.Post("/", middleware.AuthMiddleware(handlers.AddTask))
+	tasksRouter.Get("/", middleware.AuthMiddleware(handlers.GetAllTasks))
 
 	return tasksRouter
 }

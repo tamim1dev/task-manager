@@ -31,3 +31,7 @@ type ReturnUserInfo struct {
 	Email      string    `json:"email"`
 	Created_At time.Time `json:"created_at"`
 }
+
+type ReturnNewUser struct {
+	Name string `json:"name"`
+}

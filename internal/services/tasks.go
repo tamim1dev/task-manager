@@ -24,3 +24,36 @@ func AddTask(task *models.AddTask, r *http.Request) (models.Task, error) {
 	}
 	return newTask, nil
 }
+
+func GetTasksByUserID(userId string, r *http.Request) ([]models.Task, error) {
+	query := `SELECT * FROM tasks WHERE user_id = $1`
+	tasksRows, dbErr := database.DB.Pool.Query(r.Context(), query, userId)
+	if dbErr != nil {
+		return []models.Task{}, dbErr
+	}
+	defer tasksRows.Close()
+
+	var tasks []models.Task
+	for tasksRows.Next() {
+		var task models.Task
+		loopErr := tasksRows.Scan(
+			&task.Id,
+			&task.Title,
+			&task.Description,
+			&task.Completed,
+			&task.Due_Date,
+			&task.User_Id,
+			&task.Created_At,
+		)
+		if loopErr != nil {
+			return []models.Task{}, loopErr
+		}
+		tasks = append(tasks, task)
+	}
+
+	if rowsErr := tasksRows.Err(); rowsErr != nil {
+		return []models.Task{}, rowsErr
+	}
+
+	return tasks, nil
+}

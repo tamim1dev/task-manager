@@ -11,13 +11,9 @@ import (
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
-type ReturnNewUser struct {
-	Name string `json:"name"`
-}
-
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var newUser models.CreateUserRequest
-	var returnUser ReturnNewUser
+	var returnUser models.ReturnNewUser
 
 	jsonerr := json.NewDecoder(r.Body).Decode(&newUser)
 	if jsonerr != nil {
