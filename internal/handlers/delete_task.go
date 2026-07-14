@@ -8,14 +8,14 @@ import (
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
-func GetTaskById(w http.ResponseWriter, r *http.Request) {
-	task_id := chi.URLParam(r, "task_id")
-	user_id := r.Header.Get("X-User-Id")
-	task, dbErr := services.GetTaskById(task_id, user_id, r)
+func DeleteTaskById(w http.ResponseWriter, r *http.Request) {
+	taskId := chi.URLParam(r, "task_id")
+	userId := r.Header.Get("X-User-Id")
+	deletedId, dbErr := services.DeleteTaskById(taskId, userId, r)
 	if dbErr != nil {
 		utils.ReturnError(w, http.StatusInternalServerError, dbErr.Error())
 		return
 	}
 
-	utils.ReturnJson(w, http.StatusOK, task)
+	utils.ReturnJson(w, http.StatusOK, deletedId)
 }

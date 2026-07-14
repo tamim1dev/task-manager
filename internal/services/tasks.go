@@ -3,6 +3,7 @@ package services
 import (
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/tamim1dev/task-manager/internal/database"
 	"github.com/tamim1dev/task-manager/internal/models"
 )
@@ -74,4 +75,15 @@ func GetTaskById(task_id, user_id string, r *http.Request) (models.Task, error) 
 		return models.Task{}, dbErr
 	}
 	return task, nil
+}
+
+func DeleteTaskById(task_id, user_id string, r *http.Request) (string, error) {
+	var deletedId uuid.UUID
+	query := `DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING id`
+	dbErr := database.DB.Pool.QueryRow(r.Context(), query, task_id, user_id).Scan(&deletedId)
+	if dbErr != nil {
+		return "", dbErr
+	}
+
+	return deletedId.String(), nil
 }
