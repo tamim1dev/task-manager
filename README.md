@@ -30,7 +30,7 @@
 
 You just need docker installed. Then create .env file like below:
 
-* *DATABASE_URL=postgresql://user:password@db:5432/tamimsdb?sslmode=disable*
+* *DATABASE_URL=postgresql://user:password@db:5432/dbname?sslmode=disable*
 * *DB_USER=username*
 * *DB_PASSWORD=password*
 * *DB_NAME=database_name*
