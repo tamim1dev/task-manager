@@ -30,12 +30,12 @@
 
 You just need docker installed. Then create .env file like below:
 
-*DATABASE_URL=postgresql://user:password@db:5432/tamimsdb?sslmode=disable*
-*DB_USER=username*
-*DB_PASSWORD=password*
-*DB_NAME=database_name*
-*PORT=5000*
-*JWT_SECRET=create secret for jwt secret*
+* *DATABASE_URL=postgresql://user:password@db:5432/tamimsdb?sslmode=disable*
+* *DB_USER=username*
+* *DB_PASSWORD=password*
+* *DB_NAME=database_name*
+* *PORT=5000*
+* *JWT_SECRET=create secret for jwt secret*
 
 Then run:
 
