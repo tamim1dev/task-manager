@@ -1,7 +1,10 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/tamim1dev/task-manager/internal/database"
@@ -75,6 +78,65 @@ func GetTaskById(task_id, user_id string, r *http.Request) (models.Task, error) 
 		return models.Task{}, dbErr
 	}
 	return task, nil
+}
+
+func EditTask(edits models.UpdateTask, taskId, userId string, r *http.Request) (models.Task, error) {
+	var (
+		editedTask models.Task
+		argPos     = 1
+		args       []any
+		setClauses []string
+	)
+
+	if edits.Title != nil {
+		setClauses = append(setClauses, fmt.Sprintf("title = $%d", argPos))
+		args = append(args, *edits.Title)
+		argPos++
+	}
+	if edits.Description != nil {
+		setClauses = append(setClauses, fmt.Sprintf("description = $%d", argPos))
+		args = append(args, *edits.Description)
+		argPos++
+	}
+	if edits.Completed != nil {
+		setClauses = append(setClauses, fmt.Sprintf("completed = $%d", argPos))
+		args = append(args, *edits.Completed)
+		argPos++
+	}
+	if edits.Due_Date != nil {
+		newDate := time.Now().Add(time.Duration(*edits.Due_Date) * time.Hour * 24)
+		setClauses = append(setClauses, fmt.Sprintf("due_date = $%d", argPos))
+		args = append(args, newDate)
+		argPos++
+	}
+
+	if len(setClauses) == 0 {
+		return models.Task{}, fmt.Errorf("Nothing to update")
+	}
+
+	query := fmt.Sprintf(
+		"UPDATE tasks SET %s WHERE id = $%d AND user_id = $%d RETURNING *",
+		strings.Join(setClauses, ", "),
+		argPos,
+		argPos+1,
+	)
+
+	args = append(args, taskId, userId)
+
+	dbErr := database.DB.Pool.QueryRow(r.Context(), query, args...).Scan(
+		&editedTask.Id,
+		&editedTask.Title,
+		&editedTask.Description,
+		&editedTask.Completed,
+		&editedTask.Due_Date,
+		&editedTask.User_Id,
+		&editedTask.Created_At,
+	)
+	if dbErr != nil {
+		return models.Task{}, dbErr
+	}
+
+	return editedTask, nil
 }
 
 func DeleteTaskById(task_id, user_id string, r *http.Request) (string, error) {
