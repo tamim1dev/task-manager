@@ -29,9 +29,9 @@ func AddTask(task *models.AddTask, r *http.Request) (models.Task, error) {
 	return newTask, nil
 }
 
-func GetTasksByUserID(userId string, r *http.Request) ([]models.Task, error) {
-	query := `SELECT * FROM tasks WHERE user_id = $1`
-	tasksRows, dbErr := database.DB.Pool.Query(r.Context(), query, userId)
+func GetTasksByUserID(userId string, limit, offset int, r *http.Request) ([]models.Task, error) {
+	query := `SELECT * FROM tasks LIMIT $1 OFFSET $2 WHERE user_id = $3`
+	tasksRows, dbErr := database.DB.Pool.Query(r.Context(), query, limit, offset, userId)
 	if dbErr != nil {
 		return []models.Task{}, dbErr
 	}
