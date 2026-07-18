@@ -29,9 +29,16 @@ func AddTask(task *models.AddTask, r *http.Request) (models.Task, error) {
 	return newTask, nil
 }
 
-func GetTasksByUserID(userId string, limit, offset int, r *http.Request) ([]models.Task, error) {
-	query := `SELECT * FROM tasks LIMIT $1 OFFSET $2 WHERE user_id = $3`
-	tasksRows, dbErr := database.DB.Pool.Query(r.Context(), query, limit, offset, userId)
+func GetTasksByUserID(
+	userId string, limit, offset int,
+	completed *bool, sortBy, sortOrder string,
+	r *http.Request) ([]models.Task, error) {
+	query := `
+		SELECT * FROM tasks
+		WHERE user_id = $1 AND ($2::boolean IS NULL OR completed = $2)
+		ORDER BY ` + sortBy + ` ` + sortOrder + ` LIMIT $3 OFFSET $4`
+
+	tasksRows, dbErr := database.DB.Pool.Query(r.Context(), query, userId, completed, limit, offset)
 	if dbErr != nil {
 		return []models.Task{}, dbErr
 	}

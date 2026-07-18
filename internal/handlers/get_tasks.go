@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/tamim1dev/task-manager/internal/services"
 	"github.com/tamim1dev/task-manager/internal/utils"
@@ -15,27 +16,36 @@ func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	pageStr := query.Get("page")
 	limitStr := query.Get("limit")
 	// defaults for pagination
-	page := 1
+	var offset int
 	limit := 10
 
-	if pageStr != "" {
-		if parsedPage, pageErr := strconv.Atoi(pageStr); pageErr != nil && parsedPage > 0 {
-			page = parsedPage
-		}
+	if parsedLimit, limitErr := strconv.Atoi(limitStr); limitErr == nil && parsedLimit > 0 {
+		limit = min(parsedLimit, 10)
 	}
-	if limitStr != "" {
-		if parsedLimit, limitErr := strconv.Atoi(limitStr); limitErr != nil && parsedLimit > 0 {
-			if parsedLimit > 100 {
-				limit = 100
-			} else {
-				limit = parsedLimit
-			}
+	if parsedPage, pageErr := strconv.Atoi(pageStr); pageErr == nil && parsedPage > 0 {
+		offset = (parsedPage - 1) * limit
+	}
+
+	// completed filter
+	var completed *bool
+	completedStr := query.Get("completed")
+	if completedStr != "" {
+		if parsedCompleted, completedErr := strconv.ParseBool(completedStr); completedErr == nil {
+			completed = &parsedCompleted
 		}
 	}
 
-	offset := (page - 1) * limit
+	// sort_by and sort_order
+	sortBy := "created_at"
+	if query.Get("sort_by") == "due_date" {
+		sortBy = "due_date"
+	}
+	sortOrder := "DESC"
+	if strings.ToLower(query.Get("sort_order")) == "asc" {
+		sortOrder = "ASC"
+	}
 
-	tasks, dbErr := services.GetTasksByUserID(userId, limit, offset, r)
+	tasks, dbErr := services.GetTasksByUserID(userId, limit, offset, completed, sortBy, sortOrder, r)
 	if dbErr != nil {
 		utils.ReturnError(w, http.StatusInternalServerError, "Error on get tasks")
 		return
