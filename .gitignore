@@ -1,3 +1,4 @@
 cmd/bin/
 .env
 tmp/
+rest-client/
