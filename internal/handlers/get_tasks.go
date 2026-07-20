@@ -35,6 +35,13 @@ func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// search key
+	var searchKey *string
+	searchStr := query.Get("search")
+	if searchStr != "" {
+		searchKey = &searchStr
+	}
+
 	// sort_by and sort_order
 	sortBy := "created_at"
 	if query.Get("sort_by") == "due_date" {
@@ -45,7 +52,7 @@ func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 		sortOrder = "ASC"
 	}
 
-	tasks, dbErr := services.GetTasksByUserID(userId, limit, offset, completed, sortBy, sortOrder, r)
+	tasks, dbErr := services.GetTasksByUserID(userId, limit, offset, completed, sortBy, sortOrder, searchKey, r)
 	if dbErr != nil {
 		utils.ReturnError(w, http.StatusInternalServerError, "Error on get tasks")
 		return

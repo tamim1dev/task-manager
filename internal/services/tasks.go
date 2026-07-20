@@ -31,14 +31,16 @@ func AddTask(task *models.AddTask, r *http.Request) (models.Task, error) {
 
 func GetTasksByUserID(
 	userId string, limit, offset int,
-	completed *bool, sortBy, sortOrder string,
+	completed *bool, sortBy, sortOrder string, searchKey *string,
 	r *http.Request) ([]models.Task, error) {
 	query := `
 		SELECT * FROM tasks
-		WHERE user_id = $1 AND ($2::boolean IS NULL OR completed = $2)
-		ORDER BY ` + sortBy + ` ` + sortOrder + ` LIMIT $3 OFFSET $4`
+		WHERE user_id = $1 
+		AND ($2::boolean IS NULL OR completed = $2)
+		AND ($3::text IS NULL OR title ILIKE '%' || $3 || '%' OR description ILIKE '%' || $3 || '%')
+		ORDER BY ` + sortBy + ` ` + sortOrder + ` LIMIT $4 OFFSET $5`
 
-	tasksRows, dbErr := database.DB.Pool.Query(r.Context(), query, userId, completed, limit, offset)
+	tasksRows, dbErr := database.DB.Pool.Query(r.Context(), query, userId, completed, searchKey, limit, offset)
 	if dbErr != nil {
 		return []models.Task{}, dbErr
 	}
