@@ -12,5 +12,5 @@ type JwtClaims struct {
 }
 
 type TokenResponse struct {
-	Token string
+	Token string `json:"token"`
 }

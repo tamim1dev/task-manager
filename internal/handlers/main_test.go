@@ -2,13 +2,19 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tamim1dev/task-manager/internal/database"
+	"github.com/tamim1dev/task-manager/internal/models"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
@@ -70,4 +76,52 @@ func truncateTables(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to truncate tables: %v", err)
 	}
+}
+
+func seedUserViaRegister(t *testing.T, name, email, password string) {
+	t.Helper()
+
+	payload := fmt.Sprintf(`{"name":%q,"email":%q,"password":%q}`, name, email, password)
+
+	req := httptest.NewRequest(http.MethodPost, "/auth/register", strings.NewReader(payload))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	RegisterUser(rec, req)
+
+	res := rec.Result()
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(res.Body)
+		t.Fatalf("setup: failed to seed user via register, status %d, body: %s", res.StatusCode, body)
+	}
+}
+
+func getJwt(t *testing.T, email, password string) string {
+	t.Helper()
+
+	payload := fmt.Sprintf(`{"email":%q,"password":%q}`, email, password)
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(payload))
+	req.Header.Set("Content-type", "application/json")
+	rec := httptest.NewRecorder()
+	LoginUser(rec, req)
+
+	res := rec.Result()
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(res.Body)
+		t.Fatalf("setup: failed to login, status %d, body: %s", res.StatusCode, body)
+	}
+
+	var tokenResp models.TokenResponse
+	if err := json.NewDecoder(res.Body).Decode(&tokenResp); err != nil {
+		t.Fatalf("setup: failed to decode login response: %v", err)
+	}
+
+	if tokenResp.Token == "" {
+		t.Fatal("setup: login succeeded but token was empty")
+	}
+
+	return tokenResp.Token
 }

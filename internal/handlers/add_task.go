@@ -34,5 +34,5 @@ func AddTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ReturnJson(w, http.StatusOK, addedTask)
+	utils.ReturnJson(w, http.StatusCreated, addedTask)
 }
