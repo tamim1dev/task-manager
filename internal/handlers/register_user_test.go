@@ -8,6 +8,7 @@ import (
 )
 
 func TestRegisterUser(t *testing.T) {
+	truncateTables(t)
 	payload := `{"name":"abc","email":"abc@gmail.com","password":"abcpass"}`
 
 	req := httptest.NewRequest(http.MethodPost, "/auth/register", strings.NewReader(payload))

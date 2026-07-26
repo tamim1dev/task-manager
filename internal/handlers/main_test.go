@@ -14,6 +14,7 @@ import (
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
+	os.Setenv("JWT_SECRET", "4vGux6CHn8zcE0NBCi5KHNPNjdfsbv^89hkk=")
 
 	pgContainer, err := postgres.Run(ctx,
 		"postgres:18-alpine",
@@ -60,4 +61,13 @@ func runTern(connString string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func truncateTables(t *testing.T) {
+	t.Helper()
+	_, err := database.DB.Pool.Exec(context.Background(),
+		"TRUNCATE TABLE tasks, users RESTART IDENTITY CASCADE")
+	if err != nil {
+		t.Fatalf("failed to truncate tables: %v", err)
+	}
 }
