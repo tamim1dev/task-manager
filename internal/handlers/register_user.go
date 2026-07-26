@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgconn"
+
 	"github.com/tamim1dev/task-manager/internal/database"
 	"github.com/tamim1dev/task-manager/internal/models"
 	"github.com/tamim1dev/task-manager/internal/utils"
@@ -45,5 +46,5 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		utils.ReturnError(w, http.StatusInternalServerError, "Error creating user")
 		return
 	}
-	utils.ReturnJson(w, http.StatusOK, returnUser)
+	utils.ReturnJson(w, http.StatusCreated, returnUser)
 }
