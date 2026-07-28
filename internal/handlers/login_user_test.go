@@ -1,4 +1,4 @@
-package handlers
+package handlers_test
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/tamim1dev/task-manager/internal/handlers"
 )
 
 func TestLoginUser(t *testing.T) {
@@ -23,7 +25,7 @@ func TestLoginUser(t *testing.T) {
 	loginReq := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(loginPayload))
 	loginReq.Header.Set("Content-type", "application/json")
 	loginRecorder := httptest.NewRecorder()
-	LoginUser(loginRecorder, loginReq)
+	handlers.LoginUser(loginRecorder, loginReq)
 
 	loginResponse := loginRecorder.Result()
 	defer loginResponse.Body.Close()

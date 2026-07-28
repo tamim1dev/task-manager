@@ -1,10 +1,12 @@
-package handlers
+package handlers_test
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/tamim1dev/task-manager/internal/handlers"
 )
 
 func TestRegisterUser(t *testing.T) {
@@ -15,7 +17,7 @@ func TestRegisterUser(t *testing.T) {
 	req.Header.Set("Content-type", "application/json")
 	recorder := httptest.NewRecorder()
 
-	RegisterUser(recorder, req)
+	handlers.RegisterUser(recorder, req)
 
 	resp := recorder.Result()
 	defer resp.Body.Close()

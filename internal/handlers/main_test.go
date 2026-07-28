@@ -1,4 +1,4 @@
-package handlers
+package handlers_test
 
 import (
 	"context"
@@ -12,9 +12,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tamim1dev/task-manager/internal/database"
+	"github.com/tamim1dev/task-manager/internal/handlers"
 	"github.com/tamim1dev/task-manager/internal/models"
+	"github.com/tamim1dev/task-manager/internal/routers"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
@@ -86,7 +89,7 @@ func seedUserViaRegister(t *testing.T, name, email, password string) {
 	req := httptest.NewRequest(http.MethodPost, "/auth/register", strings.NewReader(payload))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
-	RegisterUser(rec, req)
+	handlers.RegisterUser(rec, req)
 
 	res := rec.Result()
 	defer res.Body.Close()
@@ -104,7 +107,7 @@ func getJwt(t *testing.T, email, password string) string {
 	req := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(payload))
 	req.Header.Set("Content-type", "application/json")
 	rec := httptest.NewRecorder()
-	LoginUser(rec, req)
+	handlers.LoginUser(rec, req)
 
 	res := rec.Result()
 	defer res.Body.Close()
@@ -124,4 +127,70 @@ func getJwt(t *testing.T, email, password string) string {
 	}
 
 	return tokenResp.Token
+}
+
+func newAuthedRequest(method, path, body, token string) *http.Request {
+	req := httptest.NewRequest(method, path, strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+	return req
+}
+
+func newTaskRouter() *chi.Mux {
+	r := chi.NewRouter()
+	r.Mount("/tasks", routers.TasksRouter())
+	return r
+}
+
+func setupTaskForUser(t *testing.T, token string) string {
+	t.Helper()
+
+	router := newTaskRouter()
+
+	payload := `{"title":"Buy groceries","description":"Milk, eggs, bread","days":7}`
+	req := newAuthedRequest(http.MethodPost, "/tasks", payload, token)
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	res := rec.Result()
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(res.Body)
+		t.Fatalf("setup: failed to create task, status %d, body: %s", res.StatusCode, body)
+	}
+
+	var task models.Task
+	if err := json.NewDecoder(res.Body).Decode(&task); err != nil {
+		t.Fatalf("setup: failed to decode created task: %v", err)
+	}
+
+	if task.Id.String() == "" {
+		t.Fatal("setup: created task but got empty ID")
+	}
+
+	return task.Id.String()
+}
+
+type testUser struct {
+	Name     string
+	Email    string
+	Password string
+	Token    string
+}
+
+func setupAuthedUser(t *testing.T) testUser {
+	t.Helper()
+
+	user := testUser{
+		Name:     "abc",
+		Email:    "abc@gmail.com",
+		Password: "abcpass",
+	}
+
+	seedUserViaRegister(t, user.Name, user.Email, user.Password)
+	user.Token = getJwt(t, user.Email, user.Password)
+
+	return user
 }
