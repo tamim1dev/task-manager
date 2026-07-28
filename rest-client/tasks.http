@@ -1,0 +1,60 @@
+### Variables Definition
+@baseUrl = http://localhost:5000/tasks
+@authToken = yourTokenHere
+
+### Create a New Task
+# @name createTask
+POST {{baseUrl}}/
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "title": "hisu dibo",
+    "description": "hisu o deoai lage",
+    "days": 1
+}
+
+### Get all tasks
+# @name getAllTasks
+GET {{baseUrl}}/
+Authorization: Bearer {{authToken}}
+
+### Get task pagination
+# @name getTaskPagination
+GET {{baseUrl}}/?limit=2&page=1
+Authorization: Bearer {{authToken}}
+
+### Get task by filter
+# @name getTaskFilter
+GET {{baseUrl}}/?completed=true
+Authorization: Bearer {{authToken}}
+
+### Get tasks with sort by
+# @name getTasksBySortBy
+GET {{baseUrl}}/?sort_by=due_date
+Authorization: Bearer {{authToken}}
+
+### Get tasks with sort order
+# @name getTasksByOrder
+GET {{baseUrl}}/?sort_order=asc
+Authorization: Bearer {{authToken}}
+
+### Get tasks with search key
+# @name getTasksBySeacrKey
+GET {{baseUrl}}/?search=hagu
+Authorization: Bearer {{authToken}}
+
+### Update a task
+# @name updateTask
+PATCH {{baseUrl}}/a07c728d-6536-4b01-9488-ecabe6b700c5
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "completed": true
+}
+
+### Delete a task
+# @name deleteTask
+DELETE {{baseUrl}}/7ea807d7-8405-4293-be22-7d2662209702
+Authorization: Bearer {{authToken}}

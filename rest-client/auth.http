@@ -1,0 +1,23 @@
+### Variables Definition
+@baseUrl = http://localhost:5000/auth
+
+### Create a New User
+# @name createUser
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+    "name": "khubaib",
+    "email": "khubaib@gmail.com",
+    "password": "khubaibpass"
+}
+
+### Login User
+# @name loginUser
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+    "email": "khubaib@gmail.com",
+    "password": "khubaibpass"
+}

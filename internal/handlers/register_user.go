@@ -12,6 +12,17 @@ import (
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
+// RegisterUser godoc
+// @Summary Register a new user
+// @Description Creates a new user account
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body models.CreateUserRequest true "Register payload"
+// @Success 201 {object} models.User
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /auth/register [post]
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var newUser models.CreateUserRequest
 	var returnUser models.ReturnNewUser

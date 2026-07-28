@@ -11,6 +11,18 @@ import (
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
+// AddTask godoc
+// @Summary Create a new task
+// @Description Creates a task for the authenticated user
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body models.AddTaskRequest true "Task payload"
+// @Success 201 {object} models.Task
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Router /tasks [post]
 func AddTask(w http.ResponseWriter, r *http.Request) {
 	userId := r.Header.Get("X-User-Id")
 	var taskRequest models.AddTaskRequest

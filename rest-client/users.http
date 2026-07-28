@@ -1,0 +1,7 @@
+### Variables Definition
+@baseUrl = http://localhost:5000/users
+@authToken = yourTokenHere
+
+### Get User Profile (Example of using variables from the response above)
+GET {{baseUrl}}/me
+Authorization: Bearer {{authToken}}

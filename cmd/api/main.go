@@ -12,12 +12,22 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/tamim1dev/task-manager/docs"
 	"github.com/tamim1dev/task-manager/internal/database"
 	"github.com/tamim1dev/task-manager/internal/middleware"
 	"github.com/tamim1dev/task-manager/internal/routers"
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
+// @title Task Manager API
+// @version 1.0
+// @description A simple task manager backend with JWT auth
+// @host localhost:5000
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	// Environment vars
 	err := godotenv.Load()
@@ -50,6 +60,7 @@ func main() {
 	router.Mount("/auth", routers.AuthRouter())
 	router.Mount("/users", routers.UsersRouter())
 	router.Mount("/tasks", routers.TasksRouter())
+	router.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	// start server and gracefull shutdown
 	srv := &http.Server{

@@ -12,6 +12,17 @@ import (
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
+// LoginUser godoc
+// @Summary Login a registered user
+// @Description Logs in with a jwt token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body models.LoginUserRequest true "login payload"
+// @Success 201 {object} models.TokenResponse
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
+// @Router /auth/login [post]
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	var loginRequest models.LoginUserRequest
 

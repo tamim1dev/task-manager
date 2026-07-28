@@ -10,6 +10,18 @@ import (
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
+// UpdateTask godoc
+// @Summary Updates a task by id
+// @Description Updates a task by id requires valid jwt token
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param task_id path string true "Task ID"
+// @Success 200 {object} models.Task
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Router /tasks/{task_id} [patch]
 func EditTask(w http.ResponseWriter, r *http.Request) {
 	taskId := chi.URLParam(r, "task_id")
 	userId := r.Header.Get("X-User-Id")

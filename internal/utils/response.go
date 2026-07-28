@@ -3,6 +3,8 @@ package utils
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/tamim1dev/task-manager/internal/models"
 )
 
 func ReturnJson(w http.ResponseWriter, status int, payload any) {
@@ -12,5 +14,8 @@ func ReturnJson(w http.ResponseWriter, status int, payload any) {
 }
 
 func ReturnError(w http.ResponseWriter, status int, message string) {
-	ReturnJson(w, status, map[string]string{"error": message})
+	errorType := &models.ErrorResponse{
+		Error: message,
+	}
+	ReturnJson(w, status, errorType)
 }

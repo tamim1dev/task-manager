@@ -9,6 +9,17 @@ import (
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
 
+// GetTasks godoc
+// @Summary Get tasks with pagination,limit,search etc
+// @Description Get tasks with pagination,limit,search, sort order with valid jwt token
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} []models.Task
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 401 {object} models.ErrorResponse
+// @Router /tasks [get]
 func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	userId := r.Header.Get("X-User-Id")
 	query := r.URL.Query()
