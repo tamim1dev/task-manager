@@ -3,14 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/tamim1dev/task-manager/internal/database"
+	"github.com/tamim1dev/task-manager/internal/middleware"
 	"github.com/tamim1dev/task-manager/internal/routers"
 	"github.com/tamim1dev/task-manager/internal/utils"
 )
@@ -34,6 +37,11 @@ func main() {
 
 	// chi initialization
 	router := chi.NewRouter()
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+	router.Use(chimw.RequestID)
+	router.Use(middleware.RequestLogger)
+
 	// healthcheck
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello"))
