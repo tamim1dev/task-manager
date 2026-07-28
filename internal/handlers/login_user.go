@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -31,7 +32,11 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		utils.ReturnError(w, http.StatusBadRequest, "Invalid json")
 		return
 	}
-	defer r.Body.Close()
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			slog.Error("failed to close request body", "error", err)
+		}
+	}()
 
 	if loginRequest.Email == "" || loginRequest.Password == "" {
 		utils.ReturnError(w, http.StatusBadRequest, "Email and password are required")

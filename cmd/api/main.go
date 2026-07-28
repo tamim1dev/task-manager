@@ -54,7 +54,9 @@ func main() {
 
 	// healthcheck
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello"))
+		if _, err := w.Write([]byte("Hello")); err != nil {
+			slog.Error("failed to write response", "error", err)
+		}
 	})
 	// router mounts
 	router.Mount("/auth", routers.AuthRouter())

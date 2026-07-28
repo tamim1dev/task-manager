@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgconn"
@@ -32,7 +33,11 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		utils.ReturnError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	defer r.Body.Close()
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			slog.Error("failed to close request body", "error", err)
+		}
+	}()
 
 	// input validation
 	if newUser.Name == "" || newUser.Email == "" || newUser.Password == "" {

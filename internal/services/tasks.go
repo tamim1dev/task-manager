@@ -120,7 +120,7 @@ func EditTask(edits models.UpdateTask, taskId, userId string, r *http.Request) (
 	}
 
 	if len(setClauses) == 0 {
-		return models.Task{}, fmt.Errorf("Nothing to update")
+		return models.Task{}, fmt.Errorf("nothing to update")
 	}
 
 	query := fmt.Sprintf(

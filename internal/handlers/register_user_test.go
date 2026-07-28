@@ -20,7 +20,9 @@ func TestRegisterUser(t *testing.T) {
 	handlers.RegisterUser(recorder, req)
 
 	resp := recorder.Result()
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected status code %v, got %v", http.StatusCreated, resp.StatusCode)

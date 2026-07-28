@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -32,7 +33,11 @@ func EditTask(w http.ResponseWriter, r *http.Request) {
 		utils.ReturnError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	defer r.Body.Close()
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			slog.Error("failed to close request body", "error", err)
+		}
+	}()
 
 	editedTask, editErr := services.EditTask(changes, taskId, userId, r)
 	if editErr != nil {

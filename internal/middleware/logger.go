@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
-	chimw "github.com/go-chi/chi/v5/middleware"
 )
 
 func RequestLogger(next http.Handler) http.Handler {
@@ -15,7 +14,7 @@ func RequestLogger(next http.Handler) http.Handler {
 		reqID := middleware.GetReqID(r.Context())
 
 		// wrap so we can read the status code after the handler runs
-		ww := chimw.NewWrapResponseWriter(w, r.ProtoMajor)
+		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
 		next.ServeHTTP(ww, r)
 

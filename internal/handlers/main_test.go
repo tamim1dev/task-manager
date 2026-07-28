@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -23,7 +24,10 @@ import (
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
-	os.Setenv("JWT_SECRET", "4vGux6CHn8zcE0NBCi5KHNPNjdfsbv^89hkk=")
+	if err := os.Setenv("JWT_SECRET", "4vGux6CHn8zcE0NBCi5KHNPNjdfsbv^89hkk="); err != nil {
+		fmt.Println("failed to set JWT_SECRET:", err)
+		os.Exit(1)
+	}
 
 	pgContainer, err := postgres.Run(ctx,
 		"postgres:18-alpine",
@@ -59,7 +63,9 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	database.DB.Pool.Close()
-	pgContainer.Terminate(ctx)
+	if err := pgContainer.Terminate(ctx); err != nil {
+		fmt.Println("failed to terminate container:", err)
+	}
 
 	os.Exit(code)
 }
@@ -92,7 +98,11 @@ func seedUserViaRegister(t *testing.T, name, email, password string) {
 	handlers.RegisterUser(rec, req)
 
 	res := rec.Result()
-	defer res.Body.Close()
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			slog.Error("failed to close request body", "error", err)
+		}
+	}()
 
 	if res.StatusCode != http.StatusCreated {
 		body, _ := io.ReadAll(res.Body)
@@ -110,7 +120,11 @@ func getJwt(t *testing.T, email, password string) string {
 	handlers.LoginUser(rec, req)
 
 	res := rec.Result()
-	defer res.Body.Close()
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			slog.Error("failed to close request body", "error", err)
+		}
+	}()
 
 	if res.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(res.Body)
@@ -154,7 +168,11 @@ func setupTaskForUser(t *testing.T, token string) string {
 	router.ServeHTTP(rec, req)
 
 	res := rec.Result()
-	defer res.Body.Close()
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			slog.Error("failed to close request body", "error", err)
+		}
+	}()
 
 	if res.StatusCode != http.StatusCreated {
 		body, _ := io.ReadAll(res.Body)

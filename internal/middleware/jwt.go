@@ -31,7 +31,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		token, tokenErr := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (any, error) {
 			_, ok := t.Method.(*jwt.SigningMethodHMAC)
 			if !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
+				return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 			}
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})

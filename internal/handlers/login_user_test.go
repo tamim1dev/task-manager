@@ -28,7 +28,9 @@ func TestLoginUser(t *testing.T) {
 	handlers.LoginUser(loginRecorder, loginReq)
 
 	loginResponse := loginRecorder.Result()
-	defer loginResponse.Body.Close()
+	defer func() {
+		_ = loginResponse.Body.Close()
+	}()
 
 	if loginResponse.StatusCode != http.StatusOK {
 		t.Errorf("Expected status code %v, got %v", http.StatusOK, loginResponse.StatusCode)

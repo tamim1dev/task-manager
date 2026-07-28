@@ -22,7 +22,9 @@ func TestAddTask(t *testing.T) {
 	router.ServeHTTP(rec, req)
 
 	res := rec.Result()
-	defer res.Body.Close()
+	defer func() {
+		_ = res.Body.Close()
+	}()
 
 	if res.StatusCode != http.StatusCreated {
 		body, _ := io.ReadAll(res.Body)
