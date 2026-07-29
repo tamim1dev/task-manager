@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -32,8 +33,7 @@ func main() {
 	// Environment vars
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error loading .env file: %v\n", err)
-		os.Exit(1)
+		log.Println("Env file error")
 	}
 
 	// DB connection
